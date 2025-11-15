@@ -163,7 +163,7 @@ adata.layers["counts"] = adata.X.copy()
 adata.write("adata_qc.h5ad")
 
 # Change variable name so raw data is untouched
-adata.raw = adata
+adata_raw = adata.copy()
 
 # Lets normalize and log-transform
 sc.pp.normalize_total(adata)
