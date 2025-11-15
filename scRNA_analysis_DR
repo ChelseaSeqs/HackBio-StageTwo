@@ -1,0 +1,31 @@
+# Please view README
+
+# Libraries
+import scanpy as sc
+import anndata as ad
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# PCA for dimensionality reduction
+sc.tl.pca(adata)
+sc.pl.pca_variance_ratio(adata, n_pcs=10, log=False)
+
+#Plot PCA colored by QC metrics: mitochondrial, ribosomal, and hemoglobin gene percentages.
+def plot_pca_qc(adata):
+  sc.pl.pca(adata, color=['pct_counts_MT', 'pct_counts_RIBO', 'pct_counts_HB'])
+    
+plot_pca_qc(adata)
+
+# Create nearest neighbours (similar cells)
+sc.pp.neighbors(adata)
+sc.tl.umap(adata)
+
+# Clustering cells using the Leiden algorithm.
+sc.tl.leiden(adata, flavor="igraph", n_iterations=2)
+sc.pl.umap(adata, color=["leiden"], wspace=0.5, size=13, ncols=1, legend_loc="on data" )
+
+
+
+
