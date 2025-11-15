@@ -19,6 +19,9 @@ adata
 # view as data frame
 adata.to_df()
 
+# Save raw copy
+adata.write("adata_raw.h5ad")
+
 # Set and check gene names
 adata.var_names = adata.var['feature_name']
 genes = adata[0].var_names[adata[0].var_names.str.startswith("MT-")]
@@ -153,23 +156,28 @@ sc.pp.filter_cells(adata, min_genes=800)
 # Remove doublets easily
 sc.pp.scrublet(adata)
 
-# Save copy of data
+# Save copy of the current expression matrix (adata.X) into a counts layer
 adata.layers["counts"] = adata.X.copy()
+
+# Save cleaned copy
+adata.write("adata_qc.h5ad")
+
+# Change variable name so raw data is untouched
+adata.raw = adata
 
 # Lets normalize and log-transform
 sc.pp.normalize_total(adata)
 sc.pp.log1p(adata)
 
-# Feature selection of top 1000 most variable genes
+# Feature selection of top 1000 genes that very the most across cells
 sc.pp.highly_variable_genes(adata, n_top_genes= 1000)
 # plot
 sc.pl.highly_variable_genes(adata)
 
+# Filter out non variable genes for dimensionality reduction + clustering
+adata = adata[:, adata.var['highly_variable']]
 
-
-
-
-
-
+# Save filtered copy
+adata_hvg.write("adata_hvg.h5ad")
 
 
