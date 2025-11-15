@@ -21,23 +21,39 @@ sc.tl.pca(adata, svd_solver="arpack")
 # PCA for dimensionality reduction
 sc.pl.pca_variance_ratio(adata, n_pcs=20, log=True)
 
-
-
-
 #Plot PCA colored by QC metrics: mitochondrial, ribosomal, and hemoglobin gene percentages.
 def plot_pca_qc(adata):
   sc.pl.pca(adata, color=['pct_counts_MT', 'pct_counts_RIBO', 'pct_counts_HB'])
     
-plot_pca_qc(adata)
-
+plot_pca_qc(adata))
+    
 # Create nearest neighbours (similar cells)
 sc.pp.neighbors(adata)
 sc.tl.umap(adata)
 
 # Clustering cells using the Leiden algorithm.
-sc.tl.leiden(adata, flavor="igraph", n_iterations=2)
-sc.pl.umap(adata, color=["leiden"], wspace=0.5, size=13, ncols=1, legend_loc="on data" )
+sc.tl.leiden(adata, resolution = 0.5)
+
+# Visualise
+sc.pl.umap(
+    adata,
+    color="leiden",
+    size=8,
+    legend_loc="on data",
+    frameon=False
+)
+
+
+
+
 
 how to map clusters from adata_hvg.obs["leiden"] to adata_full.obs.
+
+
+
+
+
+
+
 
 
