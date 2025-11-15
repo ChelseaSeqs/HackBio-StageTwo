@@ -1,7 +1,9 @@
 # Analysis of bone marrow single-cell dataset available from the CZI CellxGene portal
 
 ## Code
-Available in this repository --> scRNA_analysis.py
+Available in this repository:
+1) Data preprocessing --> scRNA_analysis_QC.py
+2) Dimension Reduction --> scRNA_analysis_DR.py
 
 ## Findings
 ### Cell types
