@@ -8,9 +8,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Load highly variable filtered data
+adata = sc.read_h5ad("adata_hvg.h5ad")
+
+# Regress out variations in data for plotting
+sc.pp.regress_out(adata, ["total_counts", "pct_counts_MT", "pct_counts_RIBO", "pct_counts_HB"])
+
+# Scale data for proper PCA
+sc.pp.scale(adata, max_value=10)
+sc.tl.pca(adata, svd_solver="arpack")
+
 # PCA for dimensionality reduction
-sc.tl.pca(adata)
-sc.pl.pca_variance_ratio(adata, n_pcs=10, log=False)
+sc.pl.pca_variance_ratio(adata, n_pcs=20, log=True)
+
+
+
 
 #Plot PCA colored by QC metrics: mitochondrial, ribosomal, and hemoglobin gene percentages.
 def plot_pca_qc(adata):
@@ -26,6 +38,6 @@ sc.tl.umap(adata)
 sc.tl.leiden(adata, flavor="igraph", n_iterations=2)
 sc.pl.umap(adata, color=["leiden"], wspace=0.5, size=13, ncols=1, legend_loc="on data" )
 
-
+how to map clusters from adata_hvg.obs["leiden"] to adata_full.obs.
 
 
