@@ -3,8 +3,8 @@
 ## Code
 Available in this repository:
 1) Data preprocessing --> scRNA_analysis_QC.py
-2) Dimension Reduction --> scRNA_analysis_DR.py
-3) Annotation and further analysis --> scRNA_analysis_Anno.py
+2) Dimension Reduction and annotation --> scRNA_analysis_DR.py
+3) Further analysis --> scRNA_analysis_Final.py
 
 ## Findings
 ### Cell types
