@@ -36,10 +36,12 @@ Data set contained 14,783 cells and 17,374 genes.
 
 ## How do cell types correlate with expected bone marrow lineage population
 This dataset is highly consistent with a bone marrow sample. A bone marrow sample is the primary site of adult hematopoiesis, meaning it should contain all major blood cell lineages, including immature and mature stages. The UMAP plot successfully displays all of these expected lineages:
-                    * **Myeloid	Monocytes:** *Neutrophils and Macrophages*
-                    * **Lymphoid:** *B-cells, T-cells, NK cells, Plasma Cells*
-                    * **Erythroid**
-                    * **Progenitors/Stem Cells**
+* **Myeloid	Monocytes:** *Neutrophils and Macrophages*
+* **Lymphoid:** *B-cells, T-cells, NK cells, Plasma Cells*
+* **Erythroid**
+* **Progenitors/Stem Cells**
+
+Potential abnormal findings are the presence of non-hematopoietic cells such as paneth cells and pericytes. 
 
 ## Expected frequency distribution for a bone marrow
 
@@ -48,9 +50,13 @@ This dataset is highly consistent with a bone marrow sample. A bone marrow sampl
 
 The dominance of Myeloid and B-cell lineages, along with the presence of immature populations, are the hallmarks of an active hematopoietic organ like the bone marrow, as opposed to peripheral blood mononuculear cells (PBMCs). With PBMCs, T-cells are typically the most abundant population. In bone marrow, T-cells and NK cells are present as mature immune cells or tissue-resident cells, but their frequency is surpassed by the developing B-cells and the heavily produced myeloid cells.
 
+## Healthy or infected?
 
+ **Heatmap of marker genes**  
+   ![Heatmap](images/marker_heatmap.png)
 
-  
+High expression of markers like $CCL3$, $CCL4$, and $CCL5$ in T-cells and NK cells. These are major inflammatory chemokines. High baseline expression might be normal for tissue-resident cells, but upregulation is a key feature of immune activation during viral or bacterial infection.
+
 
 
 
