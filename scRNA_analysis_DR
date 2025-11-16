@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import decoupler as dc
 
 # Load highly variable filtered data
 adata = sc.read_h5ad("adata_hvg.h5ad")
@@ -26,13 +27,18 @@ def plot_pca_qc(adata):
   sc.pl.pca(adata, color=['pct_counts_MT', 'pct_counts_RIBO', 'pct_counts_HB'])
     
 plot_pca_qc(adata))
-    
+
+
+
+
 # Create nearest neighbours (similar cells)
 sc.pp.neighbors(adata)
 sc.tl.umap(adata)
 
 # Clustering cells using the Leiden algorithm.
-sc.tl.leiden(adata, resolution = 0.5)
+sc.tl.leiden(adata, resolution = 0.5, flavor="igraph", n_iterations=2, directed=False)
+#save to specific column for multiple clustering
+sc.tl.leiden(adata, key_added="leiden1.5", resolution=1.5, flavor="igraph", n_iterations=2, directed=False)
 
 # Visualise
 sc.pl.umap(
@@ -43,11 +49,235 @@ sc.pl.umap(
     frameon=False
 )
 
+sc.pl.umap(
+    adata,
+    color="leiden1.5",
+    size=8,
+    legend_loc="on data",
+    frameon=False
+)
 
 
 
 
-how to map clusters from adata_hvg.obs["leiden"] to adata_full.obs.
+# Lets Annotate
+
+# Query PanglaoDB markers for human
+markers = dc.op.resource(name="PanglaoDB", organism="human")
+
+# Keep only canonical markers
+markers = markers[markers["canonical_marker"]]
+
+# Remove duplicate cell_type–gene pairs
+markers = markers[~markers.duplicated(["cell_type", "genesymbol"])]
+
+# Format columns for Decoupler (source = cell type, target = gene)
+markers = markers.rename(columns={"cell_type": "source", "genesymbol": "target"})
+markers = markers[["source", "target"]]
+
+# Keep only genes present in our dataset
+genes_in_data = markers["target"].isin(adata.var_names)
+markers = markers[genes_in_data]
+
+# Preview the first few rows
+print(markers.head())
+
+# Save cleaned markers to CSV for future use
+markers.to_csv("panglao_markers_processed.csv", index=False)
+
+
+
+
+
+# Load gene expression matrix into decoupler
+# produces per-cell activity scores for each cell type
+dc.mt.ulm(data = adata,
+          net = markers,
+          tmin = 3)
+
+# Retrieve score for each cell type
+score = dc.pp.get_obsm(adata, key="score_ulm")
+score
+
+# Preview data
+adata.obsm["score_ulm"].head()
+adata.obsm["score_ulm"].columns
+
+# Plot Decoupler ULM scores on UMAP
+def plot_ulm_umap(adata, cell_types=None, size=8, cmap="plasma"):
+
+    # Check that ULM scores exist
+    if "score_ulm" not in adata.obsm:
+        raise ValueError("ULM scores not found. Run dc.mt.ulm first.")
+    
+    # Copy all ULM scores to obs with safe column names
+    for col in adata.obsm["score_ulm"].columns:
+        safe_name = col.replace(" ", "_")
+        adata.obs[f"ULM_{safe_name}"] = adata.obsm["score_ulm"][col]
+    
+    # If no specific cell types provided, use all
+    if cell_types is None:
+        cell_types = [c.replace(" ", "_") for c in adata.obsm["score_ulm"].columns]
+    
+    # Plot each cell type
+    for ct in cell_types:
+        obs_key = f"ULM_{ct}"
+        if obs_key not in adata.obs.columns:
+            print(f"Warning: {obs_key} not found in adata.obs. Skipping.")
+            continue
+        sc.pl.umap(adata, color=obs_key, size=size, cmap=cmap)
+
+# Plot all available cell types
+plot_ulm_umap(adata, cmap="RdBu_r")
+
+
+
+# Violin plots of ULM scores grouped by clusters
+sc.pl.violin(
+    adata,
+    keys=["ULM_B_cells", "ULM_T_cells", "ULM_Macrophages"],
+    groupby="leiden1.5",
+    rotation=90
+)
+
+sc.pl.violin(
+    adata,
+    keys=["ULM_Microglia", "ULM_NK_cells", "ULM_Plasma_cells"],
+    groupby="leiden1.5",
+    rotation=90
+)
+
+
+
+# Rank ULM scores by cluster (Leiden)
+ranked = dc.tl.rankby_group(
+    score,               # per-cell ULM scores
+    groupby="leiden1.5",  # clusters
+    reference="rest",    # compare cluster vs all others
+    method="t-test_overestim_var"
+)
+
+# Keep only positively enriched scores
+ranked_pos = ranked[ranked["stat"] > 0]
+
+# Preview top results
+ranked_pos.head()
+
+# Create dictionary to map cluster labels to predicted cell types
+cluster_annotations = (
+    ranked_pos[ranked_pos["stat"] > 0]
+    .groupby("group", observed=False)  # explicitly set observed
+    .head(1)
+    .set_index("group")["name"]
+    .to_dict()
+)
+
+cluster_annotations
+
+
+
+#Create new annotation column in the AnnData object
+adata.obs["predicted_cell_type"] = adata.obs["leiden1.5"].map(cluster_annotations)
+
+# Preview a few cells
+adata.obs[["leiden1.5", "predicted_cell_type"]].head(10)
+
+
+
+# Define marker subsets
+available_genes = set(adata.var_names)
+
+# Subset markers for B cells 
+b_cell_markers = markers[markers['source'].isin(['B cells'])]['target']
+b_cell_markers = b_cell_markers[b_cell_markers.isin(available_genes)]
+
+# Subset markers for T cells 
+t_cell_markers = markers[markers['source'].isin(['T cells'])]['target']
+t_cell_markers = t_cell_markers[t_cell_markers.isin(available_genes)]
+
+# Subset markers for NK cells 
+nk_cell_markers = markers[markers['source'].isin(['NK cells'])]['target']
+nk_cell_markers = nk_cell_markers[nk_cell_markers.isin(available_genes)]
+
+
+# Filtering function
+def filter_genes(marker_list):
+    return [g for g in marker_list if g in adata.var_names]
+
+# Make dictionary
+marker_genes_dict = {
+    "B cells": filter_genes(b_cell_markers.head().tolist()),
+    "T cells": filter_genes(t_cell_markers.head().tolist()),
+    "NK cells": filter_genes(nk_cell_markers.head().tolist())
+}
+
+#Plot dotplot with leiden and unique names
+# Flatten marker_genes_dict for dotplot
+marker_genes = sum(marker_genes_dict.values(), [])
+
+# Create figure with 2 subplots
+fig, axes = plt.subplots(1, 2, figsize=(18, 6), sharey=True)
+
+# Dotplot grouped by Leiden clusters
+sc.pl.dotplot(
+    adata,
+    marker_genes_dict,
+    groupby="leiden1.5",
+    dendrogram=True,
+    ax=axes[0],
+    show=False
+)
+axes[0].set_title("Grouped by Leiden 1.5")
+
+# Dotplot grouped by predicted cell type
+sc.pl.dotplot(
+    adata,
+    marker_genes_dict,
+    groupby="predicted_cell_type",
+    dendrogram=True,
+    ax=axes[1],
+    show=False
+)
+axes[1].set_title("Grouped by Predicted Cell Type")
+
+plt.tight_layout()
+plt.show()
+
+# Annotate UMAP
+if "X_umap" not in adata.obsm.keys():
+    sc.pp.neighbors(adata, use_rep='X') 
+    sc.tl.umap(adata)
+
+# Plot UMAP using predicted_cell_type for coloring
+sc.pl.umap(
+    adata,
+    color="predicted_cell_type",   
+    legend_loc="right margin",          
+    palette="tab20",              
+    size=40,
+    frameon=False,
+    title="UMAP of Leiden1.5 clusters labeled by Predicted Cell Type"
+)
+
+
+#Plot heatmap
+sc.pl.heatmap(
+    adata,
+    marker_genes_dict,
+    groupby="predicted_cell_type",
+    dendrogram=True,
+    cmap="viridis"
+    #swap_axes=True
+)
+
+
+# Plot genome tracks
+sc.pl.tracksplot(
+    adata,
+    marker_genes_dict,
+    groupby="predicted_cell_type",
+    dendrogram=False
+)
 
 
 
