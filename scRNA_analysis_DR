@@ -284,6 +284,57 @@ sc.pl.tracksplot(
 
 
 
+# Absolute cell counts per predicted cell type 
+cell_counts = adata.obs['predicted_cell_type'].value_counts()
+print(cell_counts)
+
+# Plot
+plt.figure(figsize=(8,4))
+sns.barplot(x=cell_counts.index, y=cell_counts.values, palette="tab20")
+plt.xticks(rotation=45, ha='right')
+plt.ylabel("Number of cells")
+plt.title("Cell type composition per patient")
+plt.show()
+
+
+# Expression of key activation/infection markers 
+# Define interferon and cytokine receptors)
+markers_present = [g for g in adata.var_names if g.startswith("IF") or g.startswith("IL")]
+print(f"Found {len(markers_present)} markers starting with IF or IL:")
+
+# Violin plot of expression by predicted cell type
+sc.pl.violin(
+    adata,
+    keys=markers_present,
+    groupby="predicted_cell_type",
+    rotation=90,
+    stripplot=False,
+    jitter=False,
+    size=2
+)
+
+#Plot matrix
+sc.pl.matrixplot(
+    adata,
+    markers_present,
+    "predicted_cell_type",
+    dendrogram=True,
+    swap_axes=True
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
