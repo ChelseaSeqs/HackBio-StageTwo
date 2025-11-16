@@ -17,7 +17,7 @@ Available in this repository:
 Data set contained 14,783 cells and 17,374 genes.
 
  **UMAP of cells annotated by predicted cell type**  
-   ![UMAP](images/umap.png)
+   ![UMAP](images/final_umap.png)
 
 **Cell type description:**
 * **B cells memory:** Long-lived lymphocytes that retain the specific antibody information from a previous infection, enabling faster and stronger antibody response upon re-exposure to the same pathogen.
@@ -50,55 +50,7 @@ The dominance of Myeloid and B-cell lineages, along with the presence of immatur
 
 
 
-   **Dotplot of marker genes**  
-   ![Dotplot](images/dotplot.png)
-
-   **Stacked violin plot of marker genes**  
-   ![Stacked Violin](images/stacked_violin.png)
-Annotated cluster
-![UMAP plot](images/final_umap.png)
-
-
-
-2. Explain the biological role of each cell type
-For every annotated label, give a short explanation of what that cell type actually does in bone marrow or peripheral immunity.
-
-Examples:
-
-Neutrophils: short-lived phagocytes, first responders to infection
-
-Plasma cells: antibody factories derived from B cells
-
-Platelets: fragments of megakaryocytes, support clotting
-
-Keep each explanation tight. You are not writing a review paper.
-
-3. Is the tissue source really bone marrow? Justify your answer
-Your job is to reason your way toward (or away from) that conclusion using:
-
-expected vs. missing lineage populations
-
-typical frequency distributions
-
-presence or absence of progenitors
-
-If you claim bone marrow, explain the flaws in your logic. Otherwise, justify it biologically. Hand-waving is a fail.
-
-4. Based on the relative abundance of cell types, is the patient healthy or infected?
-Use the cluster proportions to make a call.
-
-Your job: defend your conclusion using deviations in:
-
-neutrophils
-
-monocytes
-
-NK cell activation states
-
-lymphocyte depletion or expansion
-
-Do not just guess. Interpret the landscape like a scientist.
-
+  
 
 
 
