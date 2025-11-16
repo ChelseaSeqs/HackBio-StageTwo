@@ -57,6 +57,21 @@ The dominance of Myeloid and B-cell lineages, along with the presence of immatur
 
 High expression of markers like $CCL3$, $CCL4$, and $CCL5$ in T-cells and NK cells. These are major inflammatory chemokines. High baseline expression might be normal for tissue-resident cells, but upregulation is a key feature of immune activation during viral or bacterial infection.
 
+ **Cell type count**  
+   ![Barplot](images/cell_count.png)
 
+The cell count bar plot reveals an extreme deviation from the expected frequency of cells in a normal bone marrow, the most striking finding being the overwhelming dominance of Gamma delta T-cells. As previously mentioned, normal adult bone marrow B-cells and myeloid cells should dominate. Thus this suggested infected cell data. 
+
+ **Expression pattern of Interferon-Stimulated Genes (ISGs) and Interleukin (IL) receptors**  
+   ![Matrix](images/infected_matrix.png)
+
+High expressions of $IFITM1$ and $IFITM2$ (classic antiviral proteins) in T-cells, Gamma delta T-cells, and NK cells is a strong signature of an ongoing antiviral immune response.  $IL-32 is a multifaceted cytokine associated with several diseases and inflammatory conditions. Its expression is induced in response to cellular stress.
+
+The data is highly consistent with patients undergoing a significant infectious or inflammatory episode, most likely triggered by a viral pathogen, given the strong interferon-stimulated gene signature and the extensive activation and proliferation of the cytotoxic T and NK cell lineages.
+
+
+## Learning material from:
+* https://internship.thehackbio.com
+* https://www.youtube.com/@sanbomics
 
 
