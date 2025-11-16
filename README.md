@@ -4,12 +4,12 @@
 Available in this repository:
 1) Data preprocessing --> scRNA_analysis_QC.py
 2) Dimension Reduction and annotation --> scRNA_analysis_DR.py
-3) Further analysis --> scRNA_analysis_Final.py
 
 ## Findings
 ### Cell types
 Data set contained 14,783 cells and 17,374 genes.
 
+![UMAP plot](images/umap.png)
 List each annotated cluster and UMAP
 
 2. Explain the biological role of each cell type
