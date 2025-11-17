@@ -1,4 +1,4 @@
-# Analysis of bone marrow single-cell dataset available from the CZI CellxGene portal
+# Analysis of a single-cell dataset available from the CZI CellxGene portal
 
 ## Code
 Available in this repository:
@@ -35,32 +35,33 @@ Data set contained 14,783 cells and 17,374 genes.
 
 
 ## How do cell types correlate with expected bone marrow lineage population
-This dataset is highly consistent with a bone marrow sample. A bone marrow sample is the primary site of adult hematopoiesis, meaning it should contain all major blood cell lineages, including immature and mature stages. The UMAP plot successfully displays all of these expected lineages:
+This dataset is not consistent with a bone marrow sample. A bone marrow sample is the primary site of adult hematopoiesis, meaning it should contain majority hematopoietic stem/progenitors. This lineage is not present at all in the UMAP. Instead, the UMAP plot successfully displays expected lineages in a blood sample population:
 * **Myeloid	Monocytes:** *Neutrophils and Macrophages*
 * **Lymphoid:** *B-cells, T-cells, NK cells, Plasma Cells*
 * **Erythroid**
 * **Progenitors/Stem Cells**
 
-Potential abnormal findings are the presence of non-hematopoietic cells such as paneth cells and pericytes. 
+Upon further analysis, the presence of individual bone marrow markers where searched. These included $CD34, $PROM1, and $KIT. None of these were found. The lack of these classical progenitor markers strongly suggest that data is likely from peripheral blood mononuculear cells (PBMCs), blood immune cells, or tissue-resident immune cells.
+Another abnormal findings to suggest that the data is not from a bone marrow sample are the presence of non-hematopoietic cells such as paneth cells and pericytes. 
 
 ## Expected frequency distribution for a bone marrow
 
  **Dotplot of marker genes**  
    ![Dotplot](images/dotplot.png)
 
-The dominance of Myeloid and B-cell lineages, along with the presence of immature populations, are the hallmarks of an active hematopoietic organ like the bone marrow, as opposed to peripheral blood mononuculear cells (PBMCs). With PBMCs, T-cells are typically the most abundant population. In bone marrow, T-cells and NK cells are present as mature immune cells or tissue-resident cells, but their frequency is surpassed by the developing B-cells and the heavily produced myeloid cells.
+The dominance of immature populations such as hematopoietic stem cells and myeloid cells , are the hallmarks of an active hematopoietic organ like the bone marrow. Our data set shows T-cells to be the most abundant population, strongly suggesting these are not bone marrow samples. T-cells and NK cells are present in abundance in PBMCs.
 
 ## Healthy or infected?
 
  **Heatmap of marker genes**  
    ![Heatmap](images/marker_heatmap.png)
 
-High expression of markers like $CCL3$, $CCL4$, and $CCL5$ in T-cells and NK cells. These are major inflammatory chemokines. High baseline expression might be normal for tissue-resident cells, but upregulation is a key feature of immune activation during viral or bacterial infection.
+Our dataset shows high expression of markers like $CCL3$, $CCL4$, and $CCL5$ in T-cells and NK cells. These are major inflammatory chemokines and their upregulation stronly suggests immune activation during viral or bacterial infection.
 
  **Cell type count**  
    ![Barplot](images/cell_count.png)
 
-The cell count bar plot reveals an extreme deviation from the expected frequency of cells in a normal bone marrow, the most striking finding being the overwhelming dominance of Gamma delta T-cells. As previously mentioned, normal adult bone marrow B-cells and myeloid cells should dominate. Thus this suggested infected cell data. 
+The cell count bar plot reveals an overwhelming dominance of Gamma delta T-cells. Thus suggesting infected cell data. 
 
  **Expression pattern of Interferon-Stimulated Genes (ISGs) and Interleukin (IL) receptors**  
    ![Matrix](images/infected_matrix.png)
