@@ -323,7 +323,23 @@ sc.pl.matrixplot(
 )
 
 
+# Checking data origin
 
+# Define canonical progenitor/HSC markers
+progenitor_markers = ["CD34", "CD38", "KIT", "GATA2", "FLT3", "MEIS1", "MLLT3"]
+
+# Filter to markers present in the dataset
+progenitor_markers = [g for g in progenitor_markers if g in adata.var_names]
+print(f"Found progenitor markers in dataset: {progenitor_markers}")
+
+# Dotplot to visualize progenitors across clusters
+sc.pl.dotplot(adata, { "HSC/Progenitors": progenitor_markers }, groupby="predicted_cell_type",
+              dendrogram=True, standard_scale="var")
+
+# Check counts of progenitor-expressing cells
+adata.obs['progenitor_counts'] = adata[:, progenitor_markers].X.sum(axis=1)
+print("Progenitor cell counts per cluster:")
+display(adata.obs.groupby('predicted_cell_type')['progenitor_counts'].sum())
 
 
 
